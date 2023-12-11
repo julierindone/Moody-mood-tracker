@@ -1,6 +1,18 @@
 /* === Imports === */
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"
+import { getAuth } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js"
 
 /* === Firebase Setup === */
+const firebaseConfig = {
+
+  apiKey: "AIzaSyBBVp1L3Nvv5EvyoPbwMDugyDcc3zjAAzA",
+  authDomain: "moody-b949c.firebaseapp.com",
+  projectId: "moody-b949c",
+  storageBucket: "moody-b949c.appspot.com",
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app)
 
 /* === UI === */
 
@@ -33,33 +45,33 @@ showLoggedOutView()
 /* = Functions - Firebase - Authentication = */
 
 function authSignInWithGoogle() {
-    console.log("Sign in with Google")
+  console.log("Sign in with Google")
 }
 
 function authSignInWithEmail() {
-    console.log("Sign in with email and password")
+  console.log("Sign in with email and password")
 }
 
 function authCreateAccountWithEmail() {
-    console.log("Sign up with email and password")
+  console.log("Sign up with email and password")
 }
 
 /* == Functions - UI Functions == */
 
 function showLoggedOutView() {
-    hideElement(viewLoggedIn)
-    showElement(viewLoggedOut)
+  hideElement(viewLoggedIn)
+  showElement(viewLoggedOut)
 }
 
 function showLoggedInView() {
-    hideElement(viewLoggedOut)
-    showElement(viewLoggedIn)
+  hideElement(viewLoggedOut)
+  showElement(viewLoggedIn)
 }
 
 function showElement(element) {
-    element.style.display = "flex"
+  element.style.display = "flex"
 }
 
 function hideElement(element) {
-    element.style.display = "none"
+  element.style.display = "none"
 }
