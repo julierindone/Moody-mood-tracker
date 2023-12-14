@@ -5,7 +5,10 @@ import {
   onAuthStateChanged,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
-  signOut
+  signOut,
+  GoogleAuthProvider,
+  signInWithPopup,
+  updateProfile
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js"
 
 /* === Firebase Setup === */
@@ -17,8 +20,9 @@ const firebaseConfig = {
   storageBucket: "moody-b949c.appspot.com",
 }
 
-const app = initializeApp(firebaseConfig);
+const app = initializeApp(firebaseConfig)
 const auth = getAuth(app)
+const provider = new GoogleAuthProvider()
 
 /* === UI === */
 
@@ -51,6 +55,8 @@ signOutButtonEl.addEventListener("click", authSignOut)
 onAuthStateChanged(auth, (user) => {
   if (user) {
     showLoggedInView()
+    showProfilePicture(userProfilePictureEl, user)
+    showUserGreeting(userGreetingEl, user)
   } else {
     showLoggedOutView()
   }
@@ -61,7 +67,25 @@ onAuthStateChanged(auth, (user) => {
 /* = Functions - Firebase - Authentication = */
 
 function authSignInWithGoogle() {
-  console.log("Sign in with Google")
+  signInWithPopup(auth, provider)
+    .then((result) => {
+      // This gives you a Google Access Token. You can use it to access the Google API.
+      const credential = GoogleAuthProvider.credentialFromResult(result);
+      const token = credential.accessToken;
+      // The signed-in user info.
+      const user = result.user;
+      // IdP data available using getAdditionalUserInfo(result)
+      console.log("Signed in with Google")
+    }).catch((error) => {
+      // Handle Errors here.
+      const errorCode = error.code;
+      const errorMessage = error.message;
+      // The email of the user's account used.
+      const email = error.customData.email;
+      // The AuthCredential type that was used.
+      const credential = GoogleAuthProvider.credentialFromError(error);
+      console.error(errorMessage)
+    })
 }
 
 function authSignInWithEmail() {
@@ -133,4 +157,27 @@ function clearInputField(field) {
 function clearAuthFields() {
   clearInputField(emailInputEl)
   clearInputField(passwordInputEl)
+}
+
+function showProfilePicture(imgElement, user) {
+  const photoURL = user.photoURL
+  if (photoURL) {
+    imgElement.src = photoURL
+  }
+  else {
+    imgElement.src = "assets/images/default-profile-picture.jpeg"
+  }
+}
+
+
+function showUserGreeting(userGreetingEl, user) {
+  const displayName = user.displayName
+
+  if (displayName) {
+    const userFirstName = displayName.split(" ")[0]
+    userGreetingEl.textContent = `How are you today, ${userFirstName}?`
+  }
+  else {
+    userGreetingEl.textContent = `How are you today?`
+  }
 }
