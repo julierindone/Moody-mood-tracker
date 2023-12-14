@@ -2,6 +2,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"
 import {
   getAuth,
+  onAuthStateChanged,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   signOut
@@ -47,7 +48,13 @@ signOutButtonEl.addEventListener("click", authSignOut)
 
 /* === Main Code === */
 
-showLoggedOutView()
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    showLoggedInView()
+  } else {
+    showLoggedOutView()
+  }
+})
 
 /* === Functions === */
 
@@ -64,7 +71,6 @@ function authSignInWithEmail() {
     .then((userCredential) => {
       //Signed in
       const user = userCredential.user
-      showLoggedInView()
     })
     .catch((error) => {
       console.error(error.message)
@@ -80,7 +86,6 @@ function authCreateAccountWithEmail() {
       // Signed up 
       const user = userCredential.user;
       console.log(`user created`)
-      showLoggedInView()
       // ...
     })
     .catch((error) => {
@@ -95,7 +100,6 @@ function authSignOut() {
   signOut(auth)
     .then(() => {
       // signout successful
-      showLoggedOutView()
       clearAuthFields()
 
     }).catch((error) => {
