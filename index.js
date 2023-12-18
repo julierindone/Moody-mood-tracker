@@ -41,6 +41,13 @@ const createAccountButtonEl = document.getElementById("create-account-btn")
 
 const signOutButtonEl = document.getElementById("sign-out-btn")
 
+const userProfilePictureEl = document.getElementById("user-profile-picture")
+const userGreetingEl = document.getElementById("user-greeting")
+
+const displayNameInputEl = document.getElementById("display-name-input")
+const photoURLInputEl = document.getElementById("photo-url-input")
+const updateProfileButtonEl = document.getElementById("update-profile-btn")
+
 /* == UI - Event Listeners == */
 
 signInWithGoogleButtonEl.addEventListener("click", authSignInWithGoogle)
@@ -49,6 +56,7 @@ signInButtonEl.addEventListener("click", authSignInWithEmail)
 createAccountButtonEl.addEventListener("click", authCreateAccountWithEmail)
 
 signOutButtonEl.addEventListener("click", authSignOut)
+updateProfileButtonEl.addEventListener("click", authUpdateProfile)
 
 /* === Main Code === */
 
@@ -57,6 +65,8 @@ onAuthStateChanged(auth, (user) => {
     showLoggedInView()
     showProfilePicture(userProfilePictureEl, user)
     showUserGreeting(userGreetingEl, user)
+    clearInputField(displayNameInputEl)
+    clearInputField(photoURLInputEl)
   } else {
     showLoggedOutView()
   }
@@ -65,7 +75,6 @@ onAuthStateChanged(auth, (user) => {
 /* === Functions === */
 
 /* = Functions - Firebase - Authentication = */
-
 function authSignInWithGoogle() {
   signInWithPopup(auth, provider)
     .then((result) => {
@@ -93,7 +102,6 @@ function authSignInWithEmail() {
   const password = passwordInputEl.value
   signInWithEmailAndPassword(auth, email, password)
     .then((userCredential) => {
-      //Signed in
       const user = userCredential.user
     })
     .catch((error) => {
@@ -107,17 +115,12 @@ function authCreateAccountWithEmail() {
 
   createUserWithEmailAndPassword(auth, email, password)
     .then((userCredential) => {
-      // Signed up 
       const user = userCredential.user;
       console.log(`user created`)
-      // ...
     })
     .catch((error) => {
       console.error(error.message)
-      // ..
     });
-
-  console.log("Sign up with email and password")
 }
 
 function authSignOut() {
@@ -129,6 +132,21 @@ function authSignOut() {
     }).catch((error) => {
       console.error(error.message)
     })
+}
+
+function authUpdateProfile() {
+  const newDisplayName = displayNameInputEl.value
+  const newPhotoURL = photoURLInputEl.value
+
+  updateProfile(auth.currentUser, {
+    displayName: newDisplayName,
+    photoURL: newPhotoURL
+  }).then(() => {
+    console.log(`updated profile`)
+  }).catch((error) => {
+    console.error(error.message)
+  });
+  clearProfileInputFields()
 }
 
 /* == Functions - UI Functions == */
@@ -159,6 +177,11 @@ function clearAuthFields() {
   clearInputField(passwordInputEl)
 }
 
+function clearProfileInputFields() {
+  clearInputField(displayNameInputEl)
+  clearInputField(photoURLInputEl)
+}
+
 function showProfilePicture(imgElement, user) {
   const photoURL = user.photoURL
   if (photoURL) {
@@ -169,15 +192,14 @@ function showProfilePicture(imgElement, user) {
   }
 }
 
-
-function showUserGreeting(userGreetingEl, user) {
+function showUserGreeting(element, user) {
   const displayName = user.displayName
 
   if (displayName) {
     const userFirstName = displayName.split(" ")[0]
-    userGreetingEl.textContent = `How are you today, ${userFirstName}?`
+    element.textContent = `How are you today, ${userFirstName}?`
   }
   else {
-    userGreetingEl.textContent = `How are you today?`
+    element.textContent = `How are you today?`
   }
 }

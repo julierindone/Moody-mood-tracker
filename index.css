@@ -80,6 +80,7 @@ section {
 
 .user-section img {
   width: 5rem;
+  height: 5rem;
   border-radius: 100%;
   border: var(--border-width) solid var(--dark-color);
 }
