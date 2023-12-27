@@ -7,7 +7,7 @@ import {
   signInWithEmailAndPassword,
   signOut,
   GoogleAuthProvider,
-  signInWithPopup, // updateProfile 
+  signInWithPopup,
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js"
 import {
   getFirestore,
@@ -54,9 +54,6 @@ const userGreetingEl = document.getElementById("user-greeting")
 const textareaEl = document.getElementById("post-input")
 const postButtonEl = document.getElementById("post-btn")
 
-// const displayNameInputEl = document.getElementById("display-name-input")
-// const photoURLInputEl = document.getElementById("photo-url-input")
-// const updateProfileButtonEl = document.getElementById("update-profile-btn")
 // #endregion
 
 /* == UI - Event Listeners == */
@@ -68,8 +65,6 @@ signInButtonEl.addEventListener("click", authSignInWithEmail)
 createAccountButtonEl.addEventListener("click", authCreateAccountWithEmail)
 
 signOutButtonEl.addEventListener("click", authSignOut)
-// updateProfileButtonEl.addEventListener("click", authUpdateProfile)
-
 postButtonEl.addEventListener("click", postButtonPressed)
 // #endregion
 
@@ -149,22 +144,6 @@ function authSignOut() {
     })
 }
 
-// function authUpdateProfile() {
-//   const newDisplayName = displayNameInputEl.value
-//   const newPhotoURL = photoURLInputEl.value
-
-//   updateProfile(auth.currentUser, {
-//     displayName: newDisplayName,
-//     photoURL: newPhotoURL
-//   }).then(() => {
-//     console.log(`updated profile`)
-//   }).catch((error) => {
-//     console.error(error.message)
-//   });
-//   clearProfileInputFields()
-// }
-// #endregion
-
 /* = Functions - Firebase - Cloud Firestore = */
 
 async function addPostToDB(postBody) {
@@ -214,11 +193,6 @@ function clearAuthFields() {
   clearInputField(emailInputEl)
   clearInputField(passwordInputEl)
 }
-
-// function clearProfileInputFields() {
-//   clearInputField(displayNameInputEl)
-//   clearInputField(photoURLInputEl)
-// }
 
 function showProfilePicture(imgElement, user) {
   const photoURL = user.photoURL
