@@ -8,6 +8,7 @@
   --light-color: #FFFEFC;
   --grey-color: #747E79;
   --dark-color: #000000;
+  --white-color: #FFFEFC;
 
   --primary-font: 'Cabin', sans-serif;
   --seconday-font: 'Calistoga', sans-serif;
@@ -39,11 +40,11 @@ body {
 
 /* === Typography === */
 
-h1, h2 {
+h1, h2, h3, p {
   margin: 0;
 }
 
-h2 {
+h2, h3 {
   font-weight: 500;
 }
 
@@ -91,6 +92,139 @@ section {
   display: flex;
   flex-direction: column;
   gap: 1em;
+}
+
+/* == Post Section - Mood Emojis == */
+
+.mood-emojis {
+  display: flex;
+}
+
+.mood-emoji-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 0.8em;
+  gap: 0.3em;
+  background-color: transparent;
+  border: 0;
+}
+
+.mood-emoji-btn:hover {
+  transform: scale(1.2);
+}
+
+.mood-emoji-btn img {
+  width: 3.1em;
+  height: 3.1em;
+}
+
+.selected-emoji {
+  transform: scale(1.2);
+  opacity: 1;
+}
+
+.unselected-emoji {
+  transform: scale(1);
+  opacity: 0.5;
+}
+
+/* === Posts Section === */
+
+.posts-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+margin-bottom: 1.8em;
+}
+
+/* == Posts Section - Filters == */
+
+.filters-and-posts-section {
+  margin-top: 1em;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6em;
+}
+
+.filters-section {
+  display: flex;
+  gap: 0.4em;
+}
+
+.filter-btn {
+  color: var(--dark-color);
+  font-size: 0.9em;
+  padding: 0.3em;
+  background-color: transparent;
+}
+
+.selected-filter {
+  color: var(--white-color);
+  background-color: var(--dark-color);
+}
+
+/* == Posts Section - Posts == */
+
+.post {
+  display: flex;
+  flex-direction: column;
+  background-color: var(--secondary-color);
+  padding: 0.8em;
+  border-radius: var(--element-border-radius);
+  gap: 0.4em;
+}
+
+/* = Posts Section - Posts - Header = */
+
+.post .header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.post .header h3 {
+  font-size: 1em;
+}
+
+.post .header img {
+  width: 2em;
+  height: 2em;
+}
+
+/* = Posts Section - Posts - Body = */
+
+.post p {
+  font-size: 0.9em;
+  line-height: 1.3em;
+}
+
+/* = Posts Section - Posts - Footer = */
+
+.post .footer {
+  display: flex;
+  align-self: flex-start;
+  gap: 0.4em;
+}
+
+.post .footer button {
+  font-size: 0.9em;
+  padding: 0.2em 0.8em;
+  box-shadow: 0px var(--small-button-height) 0px 0px var(--dark-color);
+  position: relative;
+}
+
+.post .footer button:hover {
+  top: var(--small-button-height);
+  box-shadow: none;
+}
+
+.post .footer .edit-color {
+  background-color: var(--post-color);
+}
+
+.post .footer .delete-color {
+  background-color: var(--delete-color);
 }
 
 /* === Nav === */
@@ -146,6 +280,7 @@ textarea:focus {
 }
 
 /* === Input fields === */
+
 textarea {
   font-size: 1em;
   border: 0;
@@ -245,15 +380,11 @@ button:hover {
   cursor: pointer;
   border: none;
   padding: 0;
-  width: 1.8rem;
+  width: 1.875em;
 }
 
 .icon-img-btn:hover {
   filter: invert(0.5);
-}
-
-#logged-out-view {
-  display: none;
 }
 
 /* === IDs === */
