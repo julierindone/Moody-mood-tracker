@@ -12,7 +12,8 @@ import {
 import {
   getFirestore,
   collection,
-  addDoc
+  addDoc,
+  serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"
 
 /* === Firebase Setup === */
@@ -22,7 +23,7 @@ const firebaseConfig = {
   apiKey: "AIzaSyBBVp1L3Nvv5EvyoPbwMDugyDcc3zjAAzA",
   authDomain: "moody-b949c.firebaseapp.com",
   projectId: "moody-b949c",
-  storageBucket: "moody-b949c.appspot.com",
+  storageBucket: "moody-b949c.appspot.com"
 }
 
 const app = initializeApp(firebaseConfig)
@@ -88,22 +89,9 @@ onAuthStateChanged(auth, (user) => {
 function authSignInWithGoogle() {
   signInWithPopup(auth, provider)
     .then((result) => {
-      // This gives you a Google Access Token. You can use it to access the Google API.
-      const credential = GoogleAuthProvider.credentialFromResult(result);
-      const token = credential.accessToken;
-      // The signed-in user info.
-      const user = result.user;
-      // IdP data available using getAdditionalUserInfo(result)
       console.log("Signed in with Google")
     }).catch((error) => {
-      // Handle Errors here.
-      const errorCode = error.code;
-      const errorMessage = error.message;
-      // The email of the user's account used.
-      const email = error.customData.email;
-      // The AuthCredential type that was used.
-      const credential = GoogleAuthProvider.credentialFromError(error);
-      console.error(errorMessage)
+      console.error(error.message)
     })
 }
 
@@ -146,12 +134,14 @@ function authSignOut() {
 
 /* = Functions - Firebase - Cloud Firestore = */
 
-async function addPostToDB(postBody) {
+async function addPostToDB(postBody, user) {
   try {
     const docRef = await addDoc(collection(db, "posts"), {
-      body: postBody
-    });
-    console.log("Document written with ID: ", docRef.id);
+      body: postBody,
+      uid: user.uid,
+      timestamp: serverTimestamp()
+    })
+    console.log("Document written with ID: ", docRef.id)
   } catch (error) {
     console.error(error.message);
   }
@@ -161,9 +151,10 @@ async function addPostToDB(postBody) {
 // #region
 function postButtonPressed() {
   const postBody = textareaEl.value
+  const user = auth.currentUser
 
   if (postBody) {
-    addPostToDB(postBody)
+    addPostToDB(postBody, user)
     clearInputField(textareaEl)
   }
 }
