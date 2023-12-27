@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.css">
@@ -7,8 +7,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cabin:wght@400;500;600;700&family=Calistoga&display=swap"
-    rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cabin:wght@400;500;600;700&family=Calistoga&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="index.css">
 </head>
 
@@ -46,16 +45,21 @@
           <img id="user-profile-picture" alt="user">
           <h2 id="user-greeting"></h2>
         </div>
-        <input id="display-name-input" type="text" placeholder="Display Name">
-        <input id="photo-url-input" type="text" placeholder="Profile Photo URL">
-        <button id="update-profile-btn" class="primary-btn">Update profile</button>
-
+        <div class="post-section">
+          <textarea id="post-input" placeholder="Write down how you're feeling..."></textarea>
+          <button id="post-btn" class="primary-btn">Post</button>
+        </div>
+        <!-- <input id="display-name-input" type="text" placeholder="Display Name">
+          <input id="photo-url-input" type="text" placeholder="Profile Photo URL">
+          <button id="update-profile-btn" class="primary-btn">Update profile</button> -->
       </div>
     </div>
 
   </section>
 
   <script src="index.js" type="module"></script>
+  <!-- <script src="bundle.js" type="module"></script> -->
+  <!-- I think this just broke it more. -->
 </body>
 
 </html>

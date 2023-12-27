@@ -7,11 +7,16 @@ import {
   signInWithEmailAndPassword,
   signOut,
   GoogleAuthProvider,
-  signInWithPopup,
-  updateProfile
+  signInWithPopup, // updateProfile 
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js"
+import {
+  getFirestore,
+  collection,
+  addDoc
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"
 
 /* === Firebase Setup === */
+// #region
 
 const firebaseConfig = {
   apiKey: "AIzaSyBBVp1L3Nvv5EvyoPbwMDugyDcc3zjAAzA",
@@ -23,11 +28,13 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig)
 const auth = getAuth(app)
 const provider = new GoogleAuthProvider()
+const db = getFirestore(app)
+// #endregion
 
 /* === UI === */
 
 /* == UI - Elements == */
-
+// #region
 const viewLoggedOut = document.getElementById("logged-out-view")
 const viewLoggedIn = document.getElementById("logged-in-view")
 
@@ -44,11 +51,16 @@ const signOutButtonEl = document.getElementById("sign-out-btn")
 const userProfilePictureEl = document.getElementById("user-profile-picture")
 const userGreetingEl = document.getElementById("user-greeting")
 
-const displayNameInputEl = document.getElementById("display-name-input")
-const photoURLInputEl = document.getElementById("photo-url-input")
-const updateProfileButtonEl = document.getElementById("update-profile-btn")
+const textareaEl = document.getElementById("post-input")
+const postButtonEl = document.getElementById("post-btn")
+
+// const displayNameInputEl = document.getElementById("display-name-input")
+// const photoURLInputEl = document.getElementById("photo-url-input")
+// const updateProfileButtonEl = document.getElementById("update-profile-btn")
+// #endregion
 
 /* == UI - Event Listeners == */
+// #region
 
 signInWithGoogleButtonEl.addEventListener("click", authSignInWithGoogle)
 
@@ -56,7 +68,11 @@ signInButtonEl.addEventListener("click", authSignInWithEmail)
 createAccountButtonEl.addEventListener("click", authCreateAccountWithEmail)
 
 signOutButtonEl.addEventListener("click", authSignOut)
-updateProfileButtonEl.addEventListener("click", authUpdateProfile)
+// updateProfileButtonEl.addEventListener("click", authUpdateProfile)
+
+postButtonEl.addEventListener("click", postButtonPressed)
+// #endregion
+
 
 /* === Main Code === */
 
@@ -65,8 +81,6 @@ onAuthStateChanged(auth, (user) => {
     showLoggedInView()
     showProfilePicture(userProfilePictureEl, user)
     showUserGreeting(userGreetingEl, user)
-    clearInputField(displayNameInputEl)
-    clearInputField(photoURLInputEl)
   } else {
     showLoggedOutView()
   }
@@ -75,6 +89,7 @@ onAuthStateChanged(auth, (user) => {
 /* === Functions === */
 
 /* = Functions - Firebase - Authentication = */
+// #region
 function authSignInWithGoogle() {
   signInWithPopup(auth, provider)
     .then((result) => {
@@ -134,22 +149,45 @@ function authSignOut() {
     })
 }
 
-function authUpdateProfile() {
-  const newDisplayName = displayNameInputEl.value
-  const newPhotoURL = photoURLInputEl.value
+// function authUpdateProfile() {
+//   const newDisplayName = displayNameInputEl.value
+//   const newPhotoURL = photoURLInputEl.value
 
-  updateProfile(auth.currentUser, {
-    displayName: newDisplayName,
-    photoURL: newPhotoURL
-  }).then(() => {
-    console.log(`updated profile`)
-  }).catch((error) => {
-    console.error(error.message)
-  });
-  clearProfileInputFields()
+//   updateProfile(auth.currentUser, {
+//     displayName: newDisplayName,
+//     photoURL: newPhotoURL
+//   }).then(() => {
+//     console.log(`updated profile`)
+//   }).catch((error) => {
+//     console.error(error.message)
+//   });
+//   clearProfileInputFields()
+// }
+// #endregion
+
+/* = Functions - Firebase - Cloud Firestore = */
+
+async function addPostToDB(postBody) {
+  try {
+    const docRef = await addDoc(collection(db, "posts"), {
+      body: postBody
+    });
+    console.log("Document written with ID: ", docRef.id);
+  } catch (error) {
+    console.error(error.message);
+  }
 }
 
 /* == Functions - UI Functions == */
+// #region
+function postButtonPressed() {
+  const postBody = textareaEl.value
+
+  if (postBody) {
+    addPostToDB(postBody)
+    clearInputField(textareaEl)
+  }
+}
 
 function showLoggedOutView() {
   hideView(viewLoggedIn)
@@ -177,10 +215,10 @@ function clearAuthFields() {
   clearInputField(passwordInputEl)
 }
 
-function clearProfileInputFields() {
-  clearInputField(displayNameInputEl)
-  clearInputField(photoURLInputEl)
-}
+// function clearProfileInputFields() {
+//   clearInputField(displayNameInputEl)
+//   clearInputField(photoURLInputEl)
+// }
 
 function showProfilePicture(imgElement, user) {
   const photoURL = user.photoURL
@@ -203,3 +241,4 @@ function showUserGreeting(element, user) {
     element.textContent = `How are you today?`
   }
 }
+// #endregion
