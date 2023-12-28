@@ -13,7 +13,8 @@ import {
   getFirestore,
   collection,
   addDoc,
-  serverTimestamp
+  serverTimestamp,
+  getDocs
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"
 
 /* === Firebase Setup === */
@@ -52,8 +53,12 @@ const signOutButtonEl = document.getElementById("sign-out-btn")
 const userProfilePictureEl = document.getElementById("user-profile-picture")
 const userGreetingEl = document.getElementById("user-greeting")
 
+const moodEmojiEls = document.getElementsByClassName("mood-emoji-btn")
 const textareaEl = document.getElementById("post-input")
 const postButtonEl = document.getElementById("post-btn")
+
+const fetchPostsButtonEl = document.getElementById("fetch-posts-btn")
+const postsEl = document.getElementById("posts")
 
 // #endregion
 
@@ -67,8 +72,17 @@ createAccountButtonEl.addEventListener("click", authCreateAccountWithEmail)
 
 signOutButtonEl.addEventListener("click", authSignOut)
 postButtonEl.addEventListener("click", postButtonPressed)
+
+fetchPostsButtonEl.addEventListener("click", fetchOnceAndRenderPostsFromDB)
+
+for(let moodEmojiEl of moodEmojiEls) {
+  moodEmojiEl.addEventListener("click", selectMood)
+}
+
 // #endregion
 
+/* === State === */
+let moodState = 0
 
 /* === Main Code === */
 
@@ -131,6 +145,7 @@ function authSignOut() {
       console.error(error.message)
     })
 }
+// #endregion
 
 /* = Functions - Firebase - Cloud Firestore = */
 
@@ -139,9 +154,11 @@ async function addPostToDB(postBody, user) {
     const docRef = await addDoc(collection(db, "posts"), {
       body: postBody,
       uid: user.uid,
-      timestamp: serverTimestamp()
+      timestamp: serverTimestamp(),
+      mood: moodState
     })
     console.log("Document written with ID: ", docRef.id)
+    fetchOnceAndRenderPostsFromDB()
   } catch (error) {
     console.error(error.message);
   }
@@ -153,9 +170,10 @@ function postButtonPressed() {
   const postBody = textareaEl.value
   const user = auth.currentUser
 
-  if (postBody) {
+  if (postBody && moodState) {
     addPostToDB(postBody, user)
     clearInputField(textareaEl)
+    resetAllMoodElements(moodEmojiEls)
   }
 }
 
@@ -206,4 +224,90 @@ function showUserGreeting(element, user) {
     element.textContent = `How are you today?`
   }
 }
+
+function displayDate(firebaseDate) {
+  const date = firebaseDate.toDate()
+  
+  const day = date.getDate()
+  const year = date.getFullYear()
+  
+  const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+  const month = monthNames[date.getMonth()]
+
+  let hours = date.getHours()
+  let minutes = date.getMinutes()
+  hours = hours < 10 ? "0" + hours : hours
+  minutes = minutes < 10 ? "0" + minutes : minutes
+
+  return `${day} ${month} ${year} - ${hours}:${minutes}`
+}
+
+async function fetchOnceAndRenderPostsFromDB() {
+  const docs = await getDocs(collection(db, "posts"))
+  docs.forEach((doc) => {
+    console.log(doc.data())
+    renderPost(postsEl, doc.data())
+  })
+}
+
+function renderPost(postsEl, postData) {
+  postsEl.innerHTML +=
+  `
+  <div class="post">
+    <div class="header">
+      <h3>${displayDate(postData.timestamp)}</h3>
+      <img src="assets/emojis/${postData.mood}.png">
+    </div>
+    <p>${replaceNewlinesWithBrTags(postData.body)}.</p>
+  </div>
+  `
+}
+
+function replaceNewlinesWithBrTags(inputString) {
+  inputString = inputString.replaceAll(/\n/g, "<br>")
+  return inputString
+}
+
+// #endregion
+
+/* == Functions - UI Functions - Mood == */
+// #region
+function selectMood(event) {
+  const selectedMoodEmojiElementId = event.currentTarget.id
+  console.log("selectedMoodEmojiElementId: ", selectedMoodEmojiElementId)
+  
+  // Incr size of chosen; gray out others
+  changeMoodsStyleAfterSelection(selectedMoodEmojiElementId, moodEmojiEls)
+
+  const chosenMoodValue = returnMoodValueFromElementId(selectedMoodEmojiElementId)
+console.log(`chosenMoodValue = ${chosenMoodValue}`)
+
+  moodState = chosenMoodValue
+}
+
+function changeMoodsStyleAfterSelection(selectedMoodEmojiElementId, allMoodElements) {
+  for (let moodEmojiEl of moodEmojiEls) {
+    if (selectedMoodEmojiElementId === moodEmojiEl.id) {
+      moodEmojiEl.classList.remove("unselected-emoji")
+      moodEmojiEl.classList.add("selected-emoji")
+    }
+    else {
+      moodEmojiEl.classList.remove("selected-emoji")
+      moodEmojiEl.classList.add("unselected-emoji")
+    }
+  }
+}
+
+function resetAllMoodElements(allMoodElements) {
+  for (let moodEmojiEl of allMoodElements) {
+    moodEmojiEl.classList.remove("selected-emoji")
+    moodEmojiEl.classList.remove("unselected-emoji")
+  }
+  moodState = 0
+}
+
+function returnMoodValueFromElementId(elementId){
+  return Number(elementId.slice(5))
+}
+
 // #endregion
