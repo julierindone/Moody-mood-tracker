@@ -15,14 +15,10 @@
 
   --border-width: 3px;
   --element-border-radius: 5px;
-
   --button-height: 5px;
-
   --small-button-height: 2px;
-
   --element-padding: 0.8em;
-
-  --maximum-width: 320px;
+  --maximum-width: 340px;
 }
 
 html,
@@ -76,7 +72,7 @@ section {
 }
 
 .user-section h2 {
-  font-size: 1.2rem;
+  font-size: 1.35rem;
 }
 
 .user-section img {
@@ -135,13 +131,13 @@ section {
   display: flex;
   flex-direction: column;
   gap: 1em;
-margin-bottom: 1.8em;
+  margin-bottom: 1.8em;
 }
 
 /* == Posts Section - Filters == */
 
 .filters-and-posts-section {
-  margin-top: 1em;
+  margin-top: .55em;
   display: flex;
   flex-direction: column;
   gap: 0.6em;
@@ -230,7 +226,7 @@ margin-bottom: 1.8em;
 /* === Nav === */
 
 nav {
-  margin: 0.6em 0;
+  margin: 0.6em 0 0.2em 0;
   width: 100%;
   display: flex;
   justify-content: flex-end;
@@ -253,7 +249,7 @@ nav {
 .app-container {
   display: flex;
   flex-direction: column;
-  gap: 2em;
+  gap: .75em;
 }
 
 /* === Common for elements === */
@@ -380,7 +376,7 @@ button:hover {
   cursor: pointer;
   border: none;
   padding: 0;
-  width: 1.875em;
+  width: 1.7em;
 }
 
 .icon-img-btn:hover {

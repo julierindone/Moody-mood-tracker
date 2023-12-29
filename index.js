@@ -1,4 +1,6 @@
 /* === Imports === */
+// #region
+
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"
 import {
   getAuth,
@@ -19,6 +21,7 @@ import {
   where,
   orderBy
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"
+// #endregion
 
 /* === Firebase Setup === */
 // #region
@@ -60,6 +63,9 @@ const moodEmojiEls = document.getElementsByClassName("mood-emoji-btn")
 const textareaEl = document.getElementById("post-input")
 const postButtonEl = document.getElementById("post-btn")
 
+const allFilterButtonEl = document.getElementById("all-filter-btn")
+const filterButtonEls = document.getElementsByClassName("filter-btn")
+
 const postsEl = document.getElementById("posts")
 
 // #endregion
@@ -74,8 +80,13 @@ createAccountButtonEl.addEventListener("click", authCreateAccountWithEmail)
 
 signOutButtonEl.addEventListener("click", authSignOut)
 postButtonEl.addEventListener("click", postButtonPressed)
+
 for (let moodEmojiEl of moodEmojiEls) {
   moodEmojiEl.addEventListener("click", selectMood)
+}
+
+for (let filterButtonEl of filterButtonEls) {
+  filterButtonEl.addEventListener("click", selectFilter)
 }
 
 // #endregion
@@ -95,7 +106,8 @@ onAuthStateChanged(auth, (user) => {
     showLoggedInView()
     showProfilePicture(userProfilePictureEl, user)
     showUserGreeting(userGreetingEl, user)
-    fetchInRealtimeAndRenderPostsFromDB(user)
+    updateFilterButtonStyle(allFilterButtonEl)
+    fetchAllPosts(user)
   } else {
     showLoggedOutView()
   }
@@ -168,8 +180,113 @@ async function addPostToDB(postBody, user) {
   }
 }
 
+function fetchInRealtimeAndRenderPostsFromDB(query, user) {
+  onSnapshot(query, (querySnapshot) => {
+    clearAll(postsEl)
+
+    querySnapshot.forEach((doc) => {
+      renderPost(postsEl, doc.data())
+    })
+  })
+}
+
+function fetchTodayPosts(user) {
+  const startOfDay = new Date()
+  startOfDay.setHours(0, 0, 0, 0)
+
+  const endOfDay = new Date()
+  endOfDay.setHours(23, 59, 59, 999)
+
+  const postsRef = collection(db, collectionName)
+
+  const q = query(postsRef, where("uid", "==", user.uid),
+                            where("timestamp", ">=", startOfDay),
+                            where("timestamp", "<=", endOfDay),
+                            orderBy("timestamp", "desc"))
+
+  fetchInRealtimeAndRenderPostsFromDB(q, user)
+}
+
+function fetchWeekPosts(user) {
+  const startOfWeek = new Date()
+  startOfWeek.setHours(0, 0, 0, 0)
+  
+  // NOTE: We're starting the week on a Monday. I have no idea what's happening in this code to get to the right day... I was just going have it show the last 7 days.
+  if (startOfWeek.getDate() === 0) { // if today is Sunday
+    startOfWeek.setDate(startOfWeek.getDate - 6)
+  } else {
+    startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay() + 1)
+  }
+
+  const endOfDay = new Date()
+  endOfDay.setHours(23, 59, 59, 999)
+
+  const postsRef = collection(db, collectionName)
+
+  const q = query(postsRef, where("uid", "==", user.uid),
+                            where("timestamp", ">=", startOfWeek),
+                            where("timestamp", "<=", endOfDay),
+                            orderBy("timestamp", "desc"))
+
+  fetchInRealtimeAndRenderPostsFromDB(q, user)
+}
+
+function fetchMonthPosts(user) {
+  const startOfMonth = new Date()
+  startOfMonth.setHours(0, 0, 0, 0)
+  startOfMonth.setDate(1)
+
+  const endOfDay = new Date()
+  endOfDay.setHours(23, 59, 59, 999)
+
+  const postsRef = collection(db, collectionName)
+
+  const q = query(postsRef, where("uid", "==", user.uid),
+                            where("timestamp", ">=", startOfMonth),
+                            where("timestamp", "<=", endOfDay),
+                            orderBy("timestamp", "desc"))
+
+  fetchInRealtimeAndRenderPostsFromDB(q, user)
+}
+
+function fetchAllPosts(user) {
+  /* Challenge:
+      This function should fetch ALL posts from the database 
+      and render them using the fetchRealtimeAndRenderPostsFromDB function.
+  */
+
+      const postsRef = collection(db, collectionName)
+
+      const q = query(postsRef, where("uid", "==", user.uid),
+                                orderBy("timestamp", "desc"))
+    
+      fetchInRealtimeAndRenderPostsFromDB(q, user)
+    
+}
+
+
+
 /* == Functions - UI Functions == */
 // #region
+
+function renderPost(postsEl, postData) {
+  postsEl.innerHTML +=
+    `
+  <div class="post">
+    <div class="header">
+      <h3>${displayDate(postData.timestamp)}</h3>
+      <img src="assets/emojis/${postData.mood}.png">
+    </div>
+    <p>${replaceNewlinesWithBrTags(postData.body)}</p>
+  </div>
+  `
+}
+
+function replaceNewlinesWithBrTags(inputString) {
+  inputString = inputString.replaceAll(/\n/g, "<br>")
+  return inputString
+}
+
 function postButtonPressed() {
   const postBody = textareaEl.value
   const user = auth.currentUser
@@ -240,10 +357,10 @@ function displayDate(firebaseDate) {
   }
 
   const date = firebaseDate.toDate()
-  
+
   const day = date.getDate()
   const year = date.getFullYear()
-  
+
   const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
   const month = monthNames[date.getMonth()]
 
@@ -255,43 +372,13 @@ function displayDate(firebaseDate) {
   return `${day} ${month} ${year} - ${hours}:${minutes}`
 }
 
-function fetchInRealtimeAndRenderPostsFromDB(user) {
-  const postsRef = collection(db, collectionName)
-  const q = query(postsRef, where("uid", "==", user.uid), orderBy("timestamp", "desc"));
-
-  onSnapshot(q, (querySnapshot) => {
-    clearAll(postsEl)
-    querySnapshot.forEach((doc) => {
-    renderPost(postsEl, doc.data())
-    })
-  })
-}
-
-function renderPost(postsEl, postData) {
-  postsEl.innerHTML +=
-  `
-  <div class="post">
-    <div class="header">
-      <h3>${displayDate(postData.timestamp)}</h3>
-      <img src="assets/emojis/${postData.mood}.png">
-    </div>
-    <p>${replaceNewlinesWithBrTags(postData.body)}.</p>
-  </div>
-  `
-}
-
-function replaceNewlinesWithBrTags(inputString) {
-  inputString = inputString.replaceAll(/\n/g, "<br>")
-  return inputString
-}
-
 // #endregion
 
 /* == Functions - UI Functions - Mood == */
 // #region
 function selectMood(event) {
   const selectedMoodEmojiElementId = event.currentTarget.id
-  
+
   // Incr size of chosen; gray out others
   changeMoodsStyleAfterSelection(selectedMoodEmojiElementId, moodEmojiEls)
 
@@ -324,4 +411,49 @@ function returnMoodValueFromElementId(elementId) {
   return Number(elementId.slice(5))
 }
 
+// #endregion
+
+/* == Functions - UI Functions - Date Filters == */
+// #region
+
+function resetAllFilterButtons(allFilterButtons) {
+  for (let filterButtonEl of allFilterButtons) {
+      filterButtonEl.classList.remove("selected-filter")
+  }
+}
+
+function updateFilterButtonStyle(element) {
+  element.classList.add("selected-filter")
+}
+
+function fetchPostsFromPeriod(period, user) {
+  if (period === "today") {
+    fetchTodayPosts(user)
+  }
+  else if (period === "week") {
+    fetchWeekPosts(user)
+  }
+  else if (period === "month") {
+    fetchMonthPosts(user)
+  }
+  else {
+    fetchAllPosts(user)
+  }
+}
+
+function selectFilter(event) {
+  const user = auth.currentUser
+  
+  const selectedFilterElementId = event.target.id
+  
+  const selectedFilterPeriod = selectedFilterElementId.split("-")[0]
+  
+  const selectedFilterElement = document.getElementById(selectedFilterElementId)
+  
+  resetAllFilterButtons(filterButtonEls)
+  
+  updateFilterButtonStyle(selectedFilterElement)
+
+  fetchPostsFromPeriod(selectedFilterPeriod, user)
+}
 // #endregion
