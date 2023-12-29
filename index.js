@@ -14,7 +14,7 @@ import {
   collection,
   addDoc,
   serverTimestamp,
-  getDocs
+  onSnapshot
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"
 
 /* === Firebase Setup === */
@@ -57,7 +57,6 @@ const moodEmojiEls = document.getElementsByClassName("mood-emoji-btn")
 const textareaEl = document.getElementById("post-input")
 const postButtonEl = document.getElementById("post-btn")
 
-const fetchPostsButtonEl = document.getElementById("fetch-posts-btn")
 const postsEl = document.getElementById("posts")
 
 // #endregion
@@ -72,10 +71,7 @@ createAccountButtonEl.addEventListener("click", authCreateAccountWithEmail)
 
 signOutButtonEl.addEventListener("click", authSignOut)
 postButtonEl.addEventListener("click", postButtonPressed)
-
-fetchPostsButtonEl.addEventListener("click", fetchOnceAndRenderPostsFromDB)
-
-for(let moodEmojiEl of moodEmojiEls) {
+for (let moodEmojiEl of moodEmojiEls) {
   moodEmojiEl.addEventListener("click", selectMood)
 }
 
@@ -84,6 +80,11 @@ for(let moodEmojiEl of moodEmojiEls) {
 /* === State === */
 let moodState = 0
 
+/* === Global Constants === */
+
+const collectionName = "posts"
+
+
 /* === Main Code === */
 
 onAuthStateChanged(auth, (user) => {
@@ -91,6 +92,7 @@ onAuthStateChanged(auth, (user) => {
     showLoggedInView()
     showProfilePicture(userProfilePictureEl, user)
     showUserGreeting(userGreetingEl, user)
+    fetchInRealtimeAndRenderPostsFromDB()
   } else {
     showLoggedOutView()
   }
@@ -151,14 +153,13 @@ function authSignOut() {
 
 async function addPostToDB(postBody, user) {
   try {
-    const docRef = await addDoc(collection(db, "posts"), {
+    const docRef = await addDoc(collection(db, collectionName), {
       body: postBody,
       uid: user.uid,
       timestamp: serverTimestamp(),
       mood: moodState
     })
     console.log("Document written with ID: ", docRef.id)
-    fetchOnceAndRenderPostsFromDB()
   } catch (error) {
     console.error(error.message);
   }
@@ -198,6 +199,11 @@ function hideView(view) {
 function clearInputField(field) {
   field.value = ""
 }
+
+function clearAll(element) {
+  element.innerHTML = ""
+}
+
 function clearAuthFields() {
   clearInputField(emailInputEl)
   clearInputField(passwordInputEl)
@@ -242,11 +248,13 @@ function displayDate(firebaseDate) {
   return `${day} ${month} ${year} - ${hours}:${minutes}`
 }
 
-async function fetchOnceAndRenderPostsFromDB() {
-  const docs = await getDocs(collection(db, "posts"))
-  docs.forEach((doc) => {
-    console.log(doc.data())
+function fetchInRealtimeAndRenderPostsFromDB() {
+  onSnapshot(collection(db, collectionName), (querySnapshot) => {
+    clearAll(postsEl)
+
+    querySnapshot.forEach((doc) => {
     renderPost(postsEl, doc.data())
+    })
   })
 }
 
@@ -306,7 +314,7 @@ function resetAllMoodElements(allMoodElements) {
   moodState = 0
 }
 
-function returnMoodValueFromElementId(elementId){
+function returnMoodValueFromElementId(elementId) {
   return Number(elementId.slice(5))
 }
 
