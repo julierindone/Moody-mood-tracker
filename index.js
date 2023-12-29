@@ -14,7 +14,10 @@ import {
   collection,
   addDoc,
   serverTimestamp,
-  onSnapshot
+  onSnapshot,
+  query,
+  where,
+  orderBy
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"
 
 /* === Firebase Setup === */
@@ -92,7 +95,7 @@ onAuthStateChanged(auth, (user) => {
     showLoggedInView()
     showProfilePicture(userProfilePictureEl, user)
     showUserGreeting(userGreetingEl, user)
-    fetchInRealtimeAndRenderPostsFromDB()
+    fetchInRealtimeAndRenderPostsFromDB(user)
   } else {
     showLoggedOutView()
   }
@@ -232,6 +235,10 @@ function showUserGreeting(element, user) {
 }
 
 function displayDate(firebaseDate) {
+  if (!firebaseDate) {
+    return "Date processing..."
+  }
+
   const date = firebaseDate.toDate()
   
   const day = date.getDate()
@@ -248,10 +255,12 @@ function displayDate(firebaseDate) {
   return `${day} ${month} ${year} - ${hours}:${minutes}`
 }
 
-function fetchInRealtimeAndRenderPostsFromDB() {
-  onSnapshot(collection(db, collectionName), (querySnapshot) => {
-    clearAll(postsEl)
+function fetchInRealtimeAndRenderPostsFromDB(user) {
+  const postsRef = collection(db, collectionName)
+  const q = query(postsRef, where("uid", "==", user.uid), orderBy("timestamp", "desc"));
 
+  onSnapshot(q, (querySnapshot) => {
+    clearAll(postsEl)
     querySnapshot.forEach((doc) => {
     renderPost(postsEl, doc.data())
     })
@@ -282,14 +291,11 @@ function replaceNewlinesWithBrTags(inputString) {
 // #region
 function selectMood(event) {
   const selectedMoodEmojiElementId = event.currentTarget.id
-  console.log("selectedMoodEmojiElementId: ", selectedMoodEmojiElementId)
   
   // Incr size of chosen; gray out others
   changeMoodsStyleAfterSelection(selectedMoodEmojiElementId, moodEmojiEls)
 
   const chosenMoodValue = returnMoodValueFromElementId(selectedMoodEmojiElementId)
-console.log(`chosenMoodValue = ${chosenMoodValue}`)
-
   moodState = chosenMoodValue
 }
 
