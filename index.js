@@ -262,24 +262,41 @@ function fetchAllPosts(user) {
     
       fetchInRealtimeAndRenderPostsFromDB(q, user)
     
-}
-
-
+} ``
 
 /* == Functions - UI Functions == */
 // #region
 
 function renderPost(postsEl, postData) {
-  postsEl.innerHTML +=
-    `
-  <div class="post">
-    <div class="header">
-      <h3>${displayDate(postData.timestamp)}</h3>
-      <img src="assets/emojis/${postData.mood}.png">
-    </div>
-    <p>${replaceNewlinesWithBrTags(postData.body)}</p>
-  </div>
-  `
+  /* <div class="post">This is the post</div> */
+  const postDiv = document.createElement("div")
+  postDiv.className = "post"
+
+
+  /* <div class="header"> </div> */
+  const headerDiv = document.createElement("div")
+  headerDiv.className = "header"
+
+  /* <h3>${displayDate(postData.timestamp)}</h3> */
+  const headerDate = document.createElement("h3")
+  headerDate.textContent = displayDate(postData.timestamp)
+  headerDiv.appendChild(headerDate)
+
+  /* <img src="assets/emojis/${postData.mood}.png"> */
+  const moodImg = document.createElement("img")
+  moodImg.src = `assets/emojis/${postData.mood}.png`
+  headerDiv.appendChild(moodImg)
+
+  /* <p>${replaceNewlinesWithBrTags(postData.body)}</p> */
+  const postBody = document.createElement("p")
+  postBody.innerHTML = replaceNewlinesWithBrTags(postData.body)
+  
+  // put the header and paragraph inside the postDiv
+  postDiv.appendChild(headerDiv)
+  postDiv.appendChild(postBody)
+
+  // Add the post to the posts section of the app.
+  postsEl.append(postDiv)
 }
 
 function replaceNewlinesWithBrTags(inputString) {
