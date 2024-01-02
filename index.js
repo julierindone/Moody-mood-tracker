@@ -2,6 +2,7 @@
 // #region
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"
+// import { initializeApp } from "firebase/app"
 import {
   getAuth,
   onAuthStateChanged,
@@ -11,6 +12,7 @@ import {
   GoogleAuthProvider,
   signInWithPopup,
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js"
+// } from "firebase/auth"
 import {
   getFirestore,
   collection,
@@ -19,8 +21,12 @@ import {
   onSnapshot,
   query,
   where,
-  orderBy
+  orderBy,
+  updateDoc,
+  doc,
+  deleteDoc
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"
+// } from "firebase/firestore"
 // #endregion
 
 /* === Firebase Setup === */
@@ -181,12 +187,24 @@ async function addPostToDB(postBody, user) {
   }
 }
 
+async function updatePostInDB(docId, newBody) {
+  const postRef = doc(db, collectionName, docId)
+
+  await updateDoc(postRef, {
+    body: newBody
+  })
+}
+
+async function deletePostFromDB(docId) {
+  await deleteDoc(doc(db, collectionName, docId))
+}
+
 function fetchInRealtimeAndRenderPostsFromDB(query, user) {
   onSnapshot(query, (querySnapshot) => {
     clearAll(postsEl)
 
     querySnapshot.forEach((doc) => {
-      renderPost(postsEl, doc.data())
+      renderPost(postsEl, doc)
     })
   })
 }
@@ -201,9 +219,9 @@ function fetchTodayPosts(user) {
   const postsRef = collection(db, collectionName)
 
   const q = query(postsRef, where("uid", "==", user.uid),
-                            where("timestamp", ">=", startOfDay),
-                            where("timestamp", "<=", endOfDay),
-                            orderBy("timestamp", "desc"))
+    where("timestamp", ">=", startOfDay),
+    where("timestamp", "<=", endOfDay),
+    orderBy("timestamp", "desc"))
 
   fetchInRealtimeAndRenderPostsFromDB(q, user)
 }
@@ -211,7 +229,7 @@ function fetchTodayPosts(user) {
 function fetchWeekPosts(user) {
   const startOfWeek = new Date()
   startOfWeek.setHours(0, 0, 0, 0)
-  
+
   if (startOfWeek.getDate() === 0) { // if today is Sunday
     startOfWeek.setDate(startOfWeek.getDate - 6)
   } else {
@@ -224,9 +242,9 @@ function fetchWeekPosts(user) {
   const postsRef = collection(db, collectionName)
 
   const q = query(postsRef, where("uid", "==", user.uid),
-                            where("timestamp", ">=", startOfWeek),
-                            where("timestamp", "<=", endOfDay),
-                            orderBy("timestamp", "desc"))
+    where("timestamp", ">=", startOfWeek),
+    where("timestamp", "<=", endOfDay),
+    orderBy("timestamp", "desc"))
 
   fetchInRealtimeAndRenderPostsFromDB(q, user)
 }
@@ -242,27 +260,28 @@ function fetchMonthPosts(user) {
   const postsRef = collection(db, collectionName)
 
   const q = query(postsRef, where("uid", "==", user.uid),
-                            where("timestamp", ">=", startOfMonth),
-                            where("timestamp", "<=", endOfDay),
-                            orderBy("timestamp", "desc"))
+    where("timestamp", ">=", startOfMonth),
+    where("timestamp", "<=", endOfDay),
+    orderBy("timestamp", "desc"))
 
   fetchInRealtimeAndRenderPostsFromDB(q, user)
 }
 
 function fetchAllPosts(user) {
-      const postsRef = collection(db, collectionName)
+  const postsRef = collection(db, collectionName)
 
-      const q = query(postsRef, where("uid", "==", user.uid),
-                                orderBy("timestamp", "desc"))
-    
-      fetchInRealtimeAndRenderPostsFromDB(q, user)
+  const q = query(postsRef, where("uid", "==", user.uid),
+    orderBy("timestamp", "desc"))
+
+  fetchInRealtimeAndRenderPostsFromDB(q, user)
 }
 // #endregion
 
 /* == Functions - UI Functions == */
 // #region
 
-function renderPost(postsEl, postData) {
+function renderPost(postsEl, wholeDoc) {
+  const postData = wholeDoc.data()
   /* <div class="post">All code for the post goes here</div> */
   const postDiv = document.createElement("div")
   postDiv.className = "post"
@@ -270,6 +289,7 @@ function renderPost(postsEl, postData) {
   // put the header and paragraph inside the postDiv
   postDiv.appendChild(createPostHeader(postData))
   postDiv.appendChild(createPostBody(postData))
+  postDiv.appendChild(createPostFooter(wholeDoc))
 
   // Add the post to the posts section of the app.
   postsEl.append(postDiv)
@@ -297,11 +317,59 @@ function createPostBody(postData) {
   /* <p>${replaceNewlinesWithBrTags(postData.body)}</p> */
   const postBody = document.createElement("p")
   postBody.innerHTML = replaceNewlinesWithBrTags(postData.body)
-  
+
   return postBody
 }
 
+function createPostUpdateButton(wholeDoc) {
+  const postId = wholeDoc.id
+  const postData = wholeDoc.data()
 
+  /* <button class="edit-color">Edit</button> */
+  const button = document.createElement("button")
+  button.textContent = "Edit"
+  button.classList.add("edit-color")
+  button.addEventListener("click", function () {
+    const newBody = prompt("Edit the post", postData.body)
+
+    if (newBody) {
+      updatePostInDB(postId, newBody)
+    }
+  })
+
+  return button
+}
+
+function createPostDeleteButton(wholeDoc) {
+  const postId = wholeDoc.id
+
+  /* 
+      <button class="delete-color">Delete</button>
+  */
+  const button = document.createElement('button')
+  button.textContent = 'Delete'
+  button.classList.add("delete-color")
+  button.addEventListener('click', function () {
+    deletePostFromDB(postId)
+  })
+  return button
+}
+
+function createPostFooter(wholeDoc) {
+  /* 
+      <div class="footer">
+          <button>Edit</button>
+          <button>Delete</button>
+      </div>
+  */
+  const footerDiv = document.createElement("div")
+  footerDiv.className = "footer"
+
+  footerDiv.appendChild(createPostUpdateButton(wholeDoc))
+  footerDiv.appendChild(createPostDeleteButton(wholeDoc))
+
+  return footerDiv
+}
 
 function replaceNewlinesWithBrTags(inputString) {
   inputString = inputString.replaceAll(/\n/g, "<br>")
@@ -439,7 +507,7 @@ function returnMoodValueFromElementId(elementId) {
 
 function resetAllFilterButtons(allFilterButtons) {
   for (let filterButtonEl of allFilterButtons) {
-      filterButtonEl.classList.remove("selected-filter")
+    filterButtonEl.classList.remove("selected-filter")
   }
 }
 
@@ -464,15 +532,15 @@ function fetchPostsFromPeriod(period, user) {
 
 function selectFilter(event) {
   const user = auth.currentUser
-  
+
   const selectedFilterElementId = event.target.id
-  
+
   const selectedFilterPeriod = selectedFilterElementId.split("-")[0]
-  
+
   const selectedFilterElement = document.getElementById(selectedFilterElementId)
-  
+
   resetAllFilterButtons(filterButtonEls)
-  
+
   updateFilterButtonStyle(selectedFilterElement)
 
   fetchPostsFromPeriod(selectedFilterPeriod, user)

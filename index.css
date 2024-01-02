@@ -1,12 +1,12 @@
 :root {
-  --primary-color: #27b4c1;
-  --secondary-color: #a0dbdb;
-  --secondary-light-color: #eaf7f7;
-  --post-color: #62EEA8;
-  --delete-color: #FF9F9F;
+  --primary-color: #6FDAEF;
+  --secondary-color: #c3f0f9;
+  --secondary-light-color: #ebfafc;
+  --post-color: #B2F7EF;
+  --delete-color: #f9ccc3;
   --light-color: #FFFEFC;
   --grey-color: #747E79;
-  --dark-color: #053d42;
+  --dark-color: #0a2b31;
   --white-color: #FFFEFC;
 
   --primary-font: 'Cabin', sans-serif;
@@ -14,7 +14,7 @@
 
   --border-width: 3px;
   --element-border-radius: 5px;
-  --button-height: 5px;
+  --button-height: 2px;
   --small-button-height: 2px;
   --element-padding: 0.8em;
   --maximum-width: 340px;
@@ -168,6 +168,7 @@ section {
   padding: 0.8em;
   border-radius: var(--element-border-radius);
   gap: 0.4em;
+  border: var(--border-width) solid var(--dark-color);
 }
 
 /* = Posts Section - Posts - Header = */
@@ -331,8 +332,10 @@ button:hover {
 }
 
 .primary-btn {
+  font-size: 1.25em;
+  text-shadow: 0 0 1px white;
   background-color: var(--primary-color);
-  box-shadow: 0px var(--button-height) 0px 0px var(--dark-color);
+  box-shadow: 1px var(--button-height) 0px 0px var(--dark-color);
   position: relative;
 }
 
