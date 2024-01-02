@@ -1,13 +1,12 @@
 :root {
-  --primary-color: #FFDE00;
-  --primary-light-color: #FFE769;
-  --secondary-color: #FFE4BA;
-  --secondary-light-color: #FFF6E8;
+  --primary-color: #27b4c1;
+  --secondary-color: #a0dbdb;
+  --secondary-light-color: #eaf7f7;
   --post-color: #62EEA8;
   --delete-color: #FF9F9F;
   --light-color: #FFFEFC;
   --grey-color: #747E79;
-  --dark-color: #000000;
+  --dark-color: #053d42;
   --white-color: #FFFEFC;
 
   --primary-font: 'Cabin', sans-serif;
@@ -29,7 +28,7 @@ body {
 }
 
 body {
-  color: var(--dark-color);
+  color: black;
   background-color: var(--secondary-light-color);
   font-family: var(--primary-font);
 }
@@ -149,7 +148,7 @@ section {
 }
 
 .filter-btn {
-  color: var(--dark-color);
+  color: black;
   font-size: 0.9em;
   padding: 0.3em;
   background-color: transparent;
@@ -180,7 +179,7 @@ section {
 }
 
 .post .header h3 {
-  font-size: 1em;
+  font-size: 1.1em;
 }
 
 .post .header img {
@@ -191,8 +190,9 @@ section {
 /* = Posts Section - Posts - Body = */
 
 .post p {
-  font-size: 0.9em;
+  font-size: 1em;
   line-height: 1.3em;
+  margin-top: -0.25rem;
 }
 
 /* = Posts Section - Posts - Footer = */

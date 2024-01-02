@@ -165,6 +165,7 @@ function authSignOut() {
 // #endregion
 
 /* = Functions - Firebase - Cloud Firestore = */
+// #region
 
 async function addPostToDB(postBody, user) {
   try {
@@ -211,7 +212,6 @@ function fetchWeekPosts(user) {
   const startOfWeek = new Date()
   startOfWeek.setHours(0, 0, 0, 0)
   
-  // NOTE: We're starting the week on a Monday. I have no idea what's happening in this code to get to the right day... I was just going have it show the last 7 days.
   if (startOfWeek.getDate() === 0) { // if today is Sunday
     startOfWeek.setDate(startOfWeek.getDate - 6)
   } else {
@@ -250,31 +250,34 @@ function fetchMonthPosts(user) {
 }
 
 function fetchAllPosts(user) {
-  /* Challenge:
-      This function should fetch ALL posts from the database 
-      and render them using the fetchRealtimeAndRenderPostsFromDB function.
-  */
-
       const postsRef = collection(db, collectionName)
 
       const q = query(postsRef, where("uid", "==", user.uid),
                                 orderBy("timestamp", "desc"))
     
       fetchInRealtimeAndRenderPostsFromDB(q, user)
-    
-} ``
+}
+// #endregion
 
 /* == Functions - UI Functions == */
 // #region
 
 function renderPost(postsEl, postData) {
-  /* <div class="post">This is the post</div> */
+  /* <div class="post">All code for the post goes here</div> */
   const postDiv = document.createElement("div")
   postDiv.className = "post"
 
+  // put the header and paragraph inside the postDiv
+  postDiv.appendChild(createPostHeader(postData))
+  postDiv.appendChild(createPostBody(postData))
 
+  // Add the post to the posts section of the app.
+  postsEl.append(postDiv)
+}
+
+function createPostHeader(postData) {
   /* <div class="header"> </div> */
-  const headerDiv = document.createElement("div")
+  let headerDiv = document.createElement("div")
   headerDiv.className = "header"
 
   /* <h3>${displayDate(postData.timestamp)}</h3> */
@@ -287,17 +290,18 @@ function renderPost(postsEl, postData) {
   moodImg.src = `assets/emojis/${postData.mood}.png`
   headerDiv.appendChild(moodImg)
 
+  return headerDiv
+}
+
+function createPostBody(postData) {
   /* <p>${replaceNewlinesWithBrTags(postData.body)}</p> */
   const postBody = document.createElement("p")
   postBody.innerHTML = replaceNewlinesWithBrTags(postData.body)
   
-  // put the header and paragraph inside the postDiv
-  postDiv.appendChild(headerDiv)
-  postDiv.appendChild(postBody)
-
-  // Add the post to the posts section of the app.
-  postsEl.append(postDiv)
+  return postBody
 }
+
+
 
 function replaceNewlinesWithBrTags(inputString) {
   inputString = inputString.replaceAll(/\n/g, "<br>")
