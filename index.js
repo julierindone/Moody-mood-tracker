@@ -2,7 +2,6 @@
 // #region
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"
-// import { initializeApp } from "firebase/app"
 import {
   getAuth,
   onAuthStateChanged,
@@ -12,7 +11,6 @@ import {
   GoogleAuthProvider,
   signInWithPopup,
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js"
-// } from "firebase/auth"
 import {
   getFirestore,
   collection,
@@ -26,7 +24,6 @@ import {
   doc,
   deleteDoc
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"
-// } from "firebase/firestore"
 // #endregion
 
 /* === Firebase Setup === */
@@ -126,7 +123,6 @@ onAuthStateChanged(auth, (user) => {
 function authSignInWithGoogle() {
   signInWithPopup(auth, provider)
     .then((result) => {
-      console.log("Signed in with Google")
     }).catch((error) => {
       console.error(error.message)
     })
@@ -151,7 +147,6 @@ function authCreateAccountWithEmail() {
   createUserWithEmailAndPassword(auth, email, password)
     .then((userCredential) => {
       const user = userCredential.user;
-      console.log(`user created`)
     })
     .catch((error) => {
       console.error(error.message)
@@ -181,7 +176,6 @@ async function addPostToDB(postBody, user) {
       timestamp: serverTimestamp(),
       mood: moodState
     })
-    console.log("Document written with ID: ", docRef.id)
   } catch (error) {
     console.error(error.message);
   }
@@ -344,11 +338,11 @@ function createPostDeleteButton(wholeDoc) {
   const postId = wholeDoc.id
 
   /* 
-      <button class="delete-color">Delete</button>
+      <button class="pink">Delete</button>
   */
   const button = document.createElement('button')
   button.textContent = 'Delete'
-  button.classList.add("delete-color")
+  button.classList.add("pink")
   button.addEventListener('click', function () {
     deletePostFromDB(postId)
   })

@@ -1,20 +1,20 @@
 :root {
-  --primary-color: #6FDAEF;
-  --secondary-color: #c3f0f9;
-  --secondary-light-color: #ebfafc;
-  --post-color: #B2F7EF;
-  --delete-color: #f9ccc3;
+  --primary-color: #9bebff;
+  --secondary-color: #D9E4EC;
+  --secondary-light-color: #EDF1F4;
+  --green: #d0efda;
+  --light-green: #DCF4E4;
+  --pink: #f5e5f1;
+  --yellow: #fcf6da;
   --light-color: #FFFEFC;
   --grey-color: #747E79;
-  --dark-color: #0a2b31;
+  --dark-color: #1e2138;
   --white-color: #FFFEFC;
-
-  --primary-font: 'Cabin', sans-serif;
-  --seconday-font: 'Calistoga', sans-serif;
-
+  --primary-font: 'Josefin Sans', sans-serif;
+  --seconday-font: 'Rowdies', sans-serif;
   --border-width: 3px;
   --element-border-radius: 5px;
-  --button-height: 2px;
+  --button-height: 1px;
   --small-button-height: 2px;
   --element-padding: 0.8em;
   --maximum-width: 340px;
@@ -29,7 +29,7 @@ body {
 
 body {
   color: black;
-  background-color: var(--secondary-light-color);
+  background: var(--secondary-light-color);
   font-family: var(--primary-font);
 }
 
@@ -40,12 +40,13 @@ h1, h2, h3, p {
 }
 
 h2, h3 {
-  font-weight: 500;
+  font-weight: 700;
 }
 
 .app-title {
   font-family: var(--seconday-font);
-  font-size: 2.5em;
+  font-weight: 400;
+  font-size: 3.21em;
   text-align: center;
 }
 
@@ -59,6 +60,10 @@ section {
   display: flex;
   flex-direction: column;
   gap: 1em;
+}
+
+.auth-fields-and-buttons input {
+  background-color: var(--secondary-color);
 }
 
 /* === User Section === */
@@ -75,8 +80,8 @@ section {
 }
 
 .user-section img {
-  width: 5rem;
-  height: 5rem;
+  width: 6rem;
+  height: 6rem;
   border-radius: 100%;
   border: var(--border-width) solid var(--dark-color);
 }
@@ -87,6 +92,10 @@ section {
   display: flex;
   flex-direction: column;
   gap: 1em;
+}
+
+.post-section textarea {
+  border: 1px solid rgb(225, 225, 225);
 }
 
 /* == Post Section - Mood Emojis == */
@@ -150,7 +159,8 @@ section {
 .filter-btn {
   color: black;
   font-size: 0.9em;
-  padding: 0.3em;
+  padding: 0.2em;
+  padding-top: 0.5em;
   background-color: transparent;
 }
 
@@ -184,8 +194,7 @@ section {
 }
 
 .post .header img {
-  width: 2em;
-  height: 2em;
+  width: 1.75em;
 }
 
 /* = Posts Section - Posts - Body = */
@@ -206,7 +215,7 @@ section {
 
 .post .footer button {
   font-size: 0.9em;
-  padding: 0.2em 0.8em;
+  padding: 0.5em 0.8em 0.2em 0.8em;
   box-shadow: 0px var(--small-button-height) 0px 0px var(--dark-color);
   position: relative;
 }
@@ -217,11 +226,11 @@ section {
 }
 
 .post .footer .edit-color {
-  background-color: var(--post-color);
+  background-color: var(--green);
 }
 
-.post .footer .delete-color {
-  background-color: var(--delete-color);
+.post .footer .pink {
+  background-color: var(--pink);
 }
 
 /* === Nav === */
@@ -244,7 +253,7 @@ nav {
 }
 
 #logged-out-view .container {
-  gap: 2em;
+  gap: 1.7em;
 }
 
 .app-container {
@@ -303,20 +312,16 @@ input {
   font-weight: 300;
 }
 
-input::placeholder {
-  /* Chrome, Firefox, Opera, Safari 10.1+ */
+input::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
   color: var(--grey-color);
-  opacity: 1;
-  /* Firefox */
+  opacity: 1; /* Firefox */
 }
 
-input:-ms-input-placeholder {
-  /* Internet Explorer 10-11 */
+input:-ms-input-placeholder { /* Internet Explorer 10-11 */
   color: var(--grey-color);
 }
 
-input::-ms-input-placeholder {
-  /* Microsoft Edge */
+input::-ms-input-placeholder { /* Microsoft Edge */
   color: var(--grey-color);
 }
 
@@ -333,25 +338,35 @@ button:hover {
 
 .primary-btn {
   font-size: 1.25em;
-  text-shadow: 0 0 1px white;
-  background-color: var(--primary-color);
+  font-weight: 700;  
+  background-color: var(--secondary-color);
+  background-image: linear-gradient(to left, #ceedd8, #e0e8cc, #efe2c9, #f9dcce, #fad9d9, #f6d9e2, #f0dbe9, #e8ddee, #e3e0f0, #e0e3f0, #dee5ef, #dfe7ed);
   box-shadow: 1px var(--button-height) 0px 0px var(--dark-color);
   position: relative;
+  padding: .4em;
+  padding-top: .75em
 }
 
 .primary-btn:hover {
   top: var(--button-height);
+  background-image: linear-gradient(to left, #b5e8c5, #d2e0b1, #ebd6ac, #fec7c7, #f9c8d6, #eecbe3, #d9d5f0, #d4dbf2, #d3e3ee);
   box-shadow: none;
 }
 
 .secondary-btn {
-  padding: 0.4em;
-  background-color: transparent;
+  background-color: var(--light-green);
+  background-image: linear-gradient(to right bottom, #c9eed5, #d0f1da, #d7f3e0, #d0ecd9, #c2e1cc, #a2c8ae);
+  font-size: .87rem;
+  font-weight: 700;
+  box-shadow: 1px var(--button-height) 0px 0px var(--dark-color);
+  padding: 0.5em;
+  padding-top: .825em;
 }
 
 .secondary-btn:hover {
-  color: var(--light-color);
-  background-color: var(--dark-color);
+  top: var(--button-height);
+  background-color: var(--green);
+  box-shadow: none;
 }
 
 .provider-btn {
