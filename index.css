@@ -1,20 +1,22 @@
 :root {
   --primary-color: #9bebff;
-  --secondary-color: #D9E4EC;
-  --secondary-light-color: #EDF1F4;
+  --blue: #d3e7f3;
+  --secondary-light-color: aliceblue;
   --green: #d0efda;
-  --light-green: #DCF4E4;
-  --pink: #f5e5f1;
+  --light-green: #cadcd3;
+  --pink: #e2d4df;
   --yellow: #fcf6da;
   --light-color: #FFFEFC;
-  --grey-color: #747E79;
+  --grey-color: #929895;
   --dark-color: #1e2138;
   --white-color: #FFFEFC;
+
   --primary-font: 'Josefin Sans', sans-serif;
   --seconday-font: 'Rowdies', sans-serif;
+
   --border-width: 3px;
   --element-border-radius: 5px;
-  --button-height: 1px;
+  --button-height: 2px;
   --small-button-height: 2px;
   --element-padding: 0.8em;
   --maximum-width: 340px;
@@ -63,7 +65,7 @@ section {
 }
 
 .auth-fields-and-buttons input {
-  background-color: var(--secondary-color);
+  background-color: var(--blue);
 }
 
 /* === User Section === */
@@ -80,8 +82,8 @@ section {
 }
 
 .user-section img {
-  width: 6rem;
-  height: 6rem;
+  width: 5rem;
+  height: 5rem;
   border-radius: 100%;
   border: var(--border-width) solid var(--dark-color);
 }
@@ -108,10 +110,12 @@ section {
   display: flex;
   flex-direction: column;
   align-items: center;
-  font-size: 0.8em;
+  font-size: 0.85em;
   gap: 0.3em;
   background-color: transparent;
   border: 0;
+  padding-top: .4em;
+  padding-bottom: .4em;
 }
 
 .mood-emoji-btn:hover {
@@ -158,7 +162,7 @@ section {
 
 .filter-btn {
   color: black;
-  font-size: 0.9em;
+  font-size: 0.95em;
   padding: 0.2em;
   padding-top: 0.5em;
   background-color: transparent;
@@ -174,7 +178,7 @@ section {
 .post {
   display: flex;
   flex-direction: column;
-  background-color: var(--secondary-color);
+  background-color: var(--blue);
   padding: 0.8em;
   border-radius: var(--element-border-radius);
   gap: 0.4em;
@@ -190,17 +194,17 @@ section {
 }
 
 .post .header h3 {
-  font-size: 1.1em;
+  font-size: 1.2em;
 }
 
 .post .header img {
-  width: 1.75em;
+  width: 2em;
 }
 
 /* = Posts Section - Posts - Body = */
 
 .post p {
-  font-size: 1em;
+  font-size: 1.15em;
   line-height: 1.3em;
   margin-top: -0.25rem;
 }
@@ -296,6 +300,7 @@ textarea {
 }
 
 textarea::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
+  font-size: 1.1em;
   color: var(--grey-color);
   opacity: 1; /* Firefox */
 }
@@ -309,7 +314,7 @@ textarea::-ms-input-placeholder { /* Microsoft Edge */
 }
 
 input {
-  font-weight: 300;
+  font-weight: 400;
 }
 
 input::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
@@ -339,9 +344,9 @@ button:hover {
 .primary-btn {
   font-size: 1.25em;
   font-weight: 700;  
-  background-color: var(--secondary-color);
+  background-color: var(--blue);
   background-image: linear-gradient(to left, #ceedd8, #e0e8cc, #efe2c9, #f9dcce, #fad9d9, #f6d9e2, #f0dbe9, #e8ddee, #e3e0f0, #e0e3f0, #dee5ef, #dfe7ed);
-  box-shadow: 1px var(--button-height) 0px 0px var(--dark-color);
+  box-shadow: 1px var(--button-height) 0px 1px var(--dark-color);
   position: relative;
   padding: .4em;
   padding-top: .75em
@@ -359,6 +364,7 @@ button:hover {
   font-size: .87rem;
   font-weight: 700;
   box-shadow: 1px var(--button-height) 0px 0px var(--dark-color);
+  position: relative;
   padding: 0.5em;
   padding-top: .825em;
 }
@@ -390,11 +396,13 @@ button:hover {
 }
 
 .icon-btn {
+  display: inline-block;
   background: none;
   cursor: pointer;
   border: none;
   padding: 0;
-  width: 1.7em;
+  width: 1.6em;
+  vertical-align: middle;
 }
 
 .icon-img-btn:hover {
@@ -410,4 +418,44 @@ button:hover {
 #logged-in-view {
   display: none;
   margin: 0;
+}
+
+@media (min-width: 320px) and (max-width:359px) {
+  :root {
+    --maximum-width: 304px;
+    --element-padding: 0.6em;
+  }
+  html {
+    font-size: 14px;
+  }
+  .mood-emoji-btn img{
+    width: 2.8em;
+    height: 2.8em;
+  }
+  .post p {
+    font-size: 1.05em;
+    line-height: 1.3em;
+    margin-top: -0.25rem;
+  }  
+}
+
+/* default: screens 360px-519px */
+
+@media (min-width: 420px) {
+  :root {
+    --maximum-width: 404px;
+  }
+}
+
+  @media (min-width: 600px) {
+    :root {
+      --maximum-width: 570px;
+    }
+    html {
+      font-size: 20px;
+    }
+    .mood-emoji-btn img{
+      width: 4em;
+      height: 4em;
+    }
 }
